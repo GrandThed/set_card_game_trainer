@@ -40,13 +40,7 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: const <Widget>[
             CustomShape(
-              fill: 0,
-            ),
-            CustomShape(
               fill: 1,
-            ),
-            CustomShape(
-              fill: 2,
             ),
           ],
         ),
@@ -69,45 +63,85 @@ class CustomShape extends StatefulWidget {
 class _CustomShapeState extends State<CustomShape> {
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 200,
-      width: 100,
-      child: CustomPaint(
-        painter: HeaderPaintDiagonal(fill: widget.fill),
-      ),
+    return Stack(
+      children: [
+        for (var i = 0; i < 7; i++)
+          Center(
+            child: SizedBox(
+              height: 200 - i * 20,
+              width: 100 - i * 10,
+              child: CustomPaint(
+                painter: HeaderPaintDiagonal(fill: widget.fill, shape: 0),
+              ),
+            ),
+          )
+      ],
     );
   }
 }
 
 class HeaderPaintDiagonal extends CustomPainter {
   final int fill;
+  final int shape;
+
   const HeaderPaintDiagonal({
     required this.fill,
+    required this.shape,
   }) : super();
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
       ..color = Colors.green.shade200
       ..style = fill == 0 ? PaintingStyle.fill : PaintingStyle.stroke
-      ..strokeWidth = 5;
+      ..strokeWidth = 3;
 
-    final path = Path();
+    final path = Path()
+      ..arcToPoint(
+        Offset(
+          size.width * 1,
+          size.height * 0,
+        ),
+        radius: Radius.circular(size.height * .05),
+        largeArc: true,
+      )
+      ..lineTo(size.width, size.height * .5)
+      ..arcToPoint(
+        Offset(
+          size.width * 0,
+          size.height * .5,
+        ),
+        radius: Radius.circular(size.height * .05),
+        largeArc: true,
+      )
+      ..close();
 
-    var customFIll = fill == 2 ? 6 : 1;
+    // var customFill = fill == 2 ? 6 : 1;
 
-    for (var i = 0; i < customFIll; i++) {
-      double h = i / 10;
-      path.addPolygon([
-        Offset(size.width * 0.5, size.height * (0 + h)),
-        Offset(size.width * (0 + h), size.height * 0.5),
-        Offset(size.width * 0.5, size.height * (1 - h)),
-        Offset(size.width * (1 - h), size.height * 0.5),
-      ], true);
-    }
+    // for (var i = 0; i < customFill; i++) {
+    //   double h = i / 10;
+    //   path.addPolygon(
+    //       SelectCustomShape(multiplier: h, size: size).rhombus(), true);
+    // }
 
     canvas.drawPath(path, paint);
   }
 
   @override
   bool shouldRepaint(CustomPainter oldDelegate) => false;
+}
+
+class SelectCustomShape {
+  final double multiplier;
+  final dynamic size;
+  const SelectCustomShape({required this.multiplier, required this.size})
+      : super();
+
+  List<Offset> rhombus() {
+    return [
+      Offset(size.width * 0.5, size.height * (0 + multiplier)),
+      Offset(size.width * (0 + multiplier), size.height * 0.5),
+      Offset(size.width * 0.5, size.height * (1 - multiplier)),
+      Offset(size.width * (1 - multiplier), size.height * 0.5),
+    ];
+  }
 }
