@@ -39,9 +39,22 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: const <Widget>[
+            Spacer(),
             CustomShape(
-              fill: 1,
+              fill: 2,
+              shape: 0,
             ),
+            Spacer(),
+            CustomShape(
+              fill: 2,
+              shape: 2,
+            ),
+            Spacer(),
+            CustomShape(
+              fill: 2,
+              shape: 1,
+            ),
+            Spacer(),
           ],
         ),
       ),
@@ -51,8 +64,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
 class CustomShape extends StatefulWidget {
   final int fill;
+  final int shape;
   const CustomShape({
     required this.fill,
+    required this.shape,
     Key? key,
   }) : super(key: key);
 
@@ -63,15 +78,17 @@ class CustomShape extends StatefulWidget {
 class _CustomShapeState extends State<CustomShape> {
   @override
   Widget build(BuildContext context) {
+    var repeatFiller = widget.fill == 2 ? 10 : 1;
     return Stack(
       children: [
-        for (var i = 0; i < 7; i++)
+        for (var i = 0; i < repeatFiller; i++)
           Center(
             child: SizedBox(
               height: 200 - i * 20,
               width: 100 - i * 10,
               child: CustomPaint(
-                painter: HeaderPaintDiagonal(fill: widget.fill, shape: 0),
+                painter:
+                    HeaderPaintDiagonal(fill: widget.fill, shape: widget.shape),
               ),
             ),
           )
@@ -95,53 +112,32 @@ class HeaderPaintDiagonal extends CustomPainter {
       ..style = fill == 0 ? PaintingStyle.fill : PaintingStyle.stroke
       ..strokeWidth = 3;
 
-    final path = Path()
-      ..arcToPoint(
-        Offset(
-          size.width * 1,
-          size.height * 0,
-        ),
-        radius: Radius.circular(size.height * .05),
-        largeArc: true,
-      )
-      ..lineTo(size.width, size.height * .5)
-      ..arcToPoint(
-        Offset(
-          size.width * 0,
-          size.height * .5,
-        ),
-        radius: Radius.circular(size.height * .05),
-        largeArc: true,
-      )
-      ..close();
-
-    // var customFill = fill == 2 ? 6 : 1;
-
-    // for (var i = 0; i < customFill; i++) {
-    //   double h = i / 10;
-    //   path.addPolygon(
-    //       SelectCustomShape(multiplier: h, size: size).rhombus(), true);
-    // }
+    final path = Path();
+    switch (shape) {
+      case 0:
+        path.addPolygon([
+          Offset(size.width * 0.5, 0),
+          Offset(0, size.height * 0.5),
+          Offset(size.width * 0.5, size.height * 1),
+          Offset(size.width * 1, size.height * 0.5),
+        ], true);
+        break;
+      case 1:
+        path.addRRect(RRect.fromRectAndRadius(
+            Rect.fromLTWH(0, 0, size.width, size.height),
+            Radius.circular(size.height / 2)));
+        break;
+      case 2:
+        path.addRRect(RRect.fromRectAndRadius(
+            Rect.fromLTWH(0, 0, size.width, size.height),
+            const Radius.circular(0)));
+        break;
+      default:
+    }
 
     canvas.drawPath(path, paint);
   }
 
   @override
   bool shouldRepaint(CustomPainter oldDelegate) => false;
-}
-
-class SelectCustomShape {
-  final double multiplier;
-  final dynamic size;
-  const SelectCustomShape({required this.multiplier, required this.size})
-      : super();
-
-  List<Offset> rhombus() {
-    return [
-      Offset(size.width * 0.5, size.height * (0 + multiplier)),
-      Offset(size.width * (0 + multiplier), size.height * 0.5),
-      Offset(size.width * 0.5, size.height * (1 - multiplier)),
-      Offset(size.width * (1 - multiplier), size.height * 0.5),
-    ];
-  }
 }
