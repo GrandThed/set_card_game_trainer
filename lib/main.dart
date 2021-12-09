@@ -78,21 +78,12 @@ class CustomShape extends StatefulWidget {
 class _CustomShapeState extends State<CustomShape> {
   @override
   Widget build(BuildContext context) {
-    var repeatFiller = widget.fill == 2 ? 10 : 1;
-    return Stack(
-      children: [
-        for (var i = 0; i < repeatFiller; i++)
-          Center(
-            child: SizedBox(
-              height: 200 - i * 20,
-              width: 100 - i * 10,
-              child: CustomPaint(
-                painter:
-                    HeaderPaintDiagonal(fill: widget.fill, shape: widget.shape),
-              ),
-            ),
-          )
-      ],
+    return SizedBox(
+      height: 200,
+      width: 100,
+      child: CustomPaint(
+        painter: HeaderPaintDiagonal(fill: widget.fill, shape: widget.shape),
+      ),
     );
   }
 }
@@ -115,22 +106,37 @@ class HeaderPaintDiagonal extends CustomPainter {
     final path = Path();
     switch (shape) {
       case 0:
-        path.addPolygon([
-          Offset(size.width * 0.5, 0),
-          Offset(0, size.height * 0.5),
-          Offset(size.width * 0.5, size.height * 1),
-          Offset(size.width * 1, size.height * 0.5),
-        ], true);
+        for (var i = 0; i < 6; i++) {
+          double h = i / 10;
+          path.addPolygon([
+            Offset(size.width * 0.5, size.height * (0 + h)),
+            Offset(size.width * (0 + h), size.height * 0.5),
+            Offset(size.width * 0.5, size.height * (1 - h)),
+            Offset(size.width * (1 - h), size.height * 0.5),
+          ], true);
+        }
         break;
       case 1:
-        path.addRRect(RRect.fromRectAndRadius(
-            Rect.fromLTWH(0, 0, size.width, size.height),
-            Radius.circular(size.height / 2)));
+        for (var i = 0; i < 8; i++) {
+          double h = i / 10;
+          path.addRRect(RRect.fromRectAndRadius(
+              Rect.fromLTWH(size.width * (h / 2), size.height * (h / 2),
+                  size.width * (1 - h), size.height * (1 - h)),
+              Radius.circular(size.height / 2)));
+        }
+
         break;
       case 2:
-        path.addRRect(RRect.fromRectAndRadius(
-            Rect.fromLTWH(0, 0, size.width, size.height),
-            const Radius.circular(0)));
+        for (var i = 0; i < 8; i++) {
+          double h = i / 10;
+          path.addRRect(RRect.fromRectAndRadius(
+              Rect.fromLTWH(size.width * (h / 2), size.height * (h / 2),
+                  size.width * (1 - h), size.height * (1 - h)),
+              const Radius.circular(0)));
+        }
+        // path.addRRect(RRect.fromRectAndRadius(
+        //     Rect.fromLTWH(0, 0, size.width, size.height),
+        //     const Radius.circular(0)));
         break;
       default:
     }
