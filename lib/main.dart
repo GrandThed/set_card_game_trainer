@@ -31,31 +31,63 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
+    List<CardProperties> cards = [
+      CardProperties(color: Colors.red.shade300, shape: 0, amout: 2, fill: 2),
+      CardProperties(color: Colors.blue.shade300, shape: 1, amout: 2, fill: 2),
+      CardProperties(color: Colors.green.shade300, shape: 2, amout: 2, fill: 2),
+    ];
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: Center(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: const <Widget>[
-            Spacer(),
-            CustomShape(
-              fill: 2,
-              shape: 0,
-            ),
-            Spacer(),
-            CustomShape(
-              fill: 2,
-              shape: 2,
-            ),
-            Spacer(),
-            CustomShape(
-              fill: 2,
-              shape: 1,
-            ),
-            Spacer(),
-          ],
+      body: Row(
+        children: [
+          for (var i = 0; i < cards.length; i++)
+            SizedBox(width: width / cards.length, child: ShapeCard(cards[i])),
+        ],
+      ),
+    );
+  }
+}
+
+class CardProperties {
+  final Color color;
+  final int shape;
+  final int amout;
+  final int fill;
+
+  const CardProperties(
+      {required this.color,
+      required this.shape,
+      required this.amout,
+      required this.fill})
+      : super();
+}
+
+class ShapeCard extends StatelessWidget {
+  final CardProperties cardProperties;
+  const ShapeCard(
+    this.cardProperties, {
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: const EdgeInsets.all(5),
+      color: Colors.blue.shade50,
+      elevation: 3,
+      child: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(10),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              for (var i = 0; i < cardProperties.amout; i++)
+                CustomShape(cardProperties)
+            ],
+          ),
         ),
       ),
     );
@@ -63,11 +95,9 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 
 class CustomShape extends StatefulWidget {
-  final int fill;
-  final int shape;
-  const CustomShape({
-    required this.fill,
-    required this.shape,
+  final CardProperties cardProperties;
+  const CustomShape(
+    this.cardProperties, {
     Key? key,
   }) : super(key: key);
 
@@ -78,35 +108,37 @@ class CustomShape extends StatefulWidget {
 class _CustomShapeState extends State<CustomShape> {
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 200,
-      width: 100,
-      child: CustomPaint(
-        painter: HeaderPaintDiagonal(fill: widget.fill, shape: widget.shape),
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+      child: SizedBox(
+        height: 100,
+        width: 200,
+        child: CustomPaint(
+          painter: HeaderPaintDiagonal(widget.cardProperties),
+        ),
       ),
     );
   }
 }
 
 class HeaderPaintDiagonal extends CustomPainter {
-  final int fill;
-  final int shape;
+  final CardProperties cardProperties;
 
-  const HeaderPaintDiagonal({
-    required this.fill,
-    required this.shape,
-  }) : super();
+  const HeaderPaintDiagonal(this.cardProperties) : super();
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.green.shade200
-      ..style = fill == 0 ? PaintingStyle.fill : PaintingStyle.stroke
+      ..color = cardProperties.color
+      ..style =
+          cardProperties.fill == 0 ? PaintingStyle.fill : PaintingStyle.stroke
       ..strokeWidth = 3;
 
+    var fillCustom = cardProperties.fill == 2 ? 8 : 1;
+
     final path = Path();
-    switch (shape) {
+    switch (cardProperties.shape) {
       case 0:
-        for (var i = 0; i < 6; i++) {
+        for (var i = 0; i < fillCustom; i++) {
           double h = i / 10;
           path.addPolygon([
             Offset(size.width * 0.5, size.height * (0 + h)),
@@ -117,7 +149,7 @@ class HeaderPaintDiagonal extends CustomPainter {
         }
         break;
       case 1:
-        for (var i = 0; i < 8; i++) {
+        for (var i = 0; i < fillCustom; i++) {
           double h = i / 10;
           path.addRRect(RRect.fromRectAndRadius(
               Rect.fromLTWH(size.width * (h / 2), size.height * (h / 2),
@@ -127,7 +159,7 @@ class HeaderPaintDiagonal extends CustomPainter {
 
         break;
       case 2:
-        for (var i = 0; i < 8; i++) {
+        for (var i = 0; i < fillCustom; i++) {
           double h = i / 10;
           path.addRRect(RRect.fromRectAndRadius(
               Rect.fromLTWH(size.width * (h / 2), size.height * (h / 2),
