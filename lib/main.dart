@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:set_card_game_trainer/Cards/card_container.dart';
 import 'package:set_card_game_trainer/Cards/card_properties.dart';
+import 'package:set_card_game_trainer/Cards/card_properties_generator.dart';
 
 void main() {
   runApp(const MyApp());
@@ -34,11 +35,9 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
-    List<CardProperties> cards = [
-      CardProperties(color: Colors.red.shade300, shape: 0, amout: 2, fill: 2),
-      CardProperties(color: Colors.blue.shade300, shape: 1, amout: 2, fill: 2),
-      CardProperties(color: Colors.green.shade300, shape: 2, amout: 2, fill: 2),
-    ];
+    List<CardProperties> cards =
+        CardPropertiesGenerator().getProperties(amount: 3, difficulty: 3);
+
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
