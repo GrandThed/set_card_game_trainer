@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:set_card_game_trainer/Cards/card_properties.dart';
 
-class HeaderPaintDiagonal extends CustomPainter {
+class ShapeGenerator extends CustomPainter {
   final CardProperties cardProperties;
 
-  const HeaderPaintDiagonal(this.cardProperties) : super();
+  const ShapeGenerator(this.cardProperties) : super();
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()

@@ -22,7 +22,7 @@ class _CustomShapeState extends State<CustomShape> {
         height: 100,
         width: 200,
         child: CustomPaint(
-          painter: HeaderPaintDiagonal(widget.cardProperties),
+          painter: ShapeGenerator(widget.cardProperties),
         ),
       ),
     );
