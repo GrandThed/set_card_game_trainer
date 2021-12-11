@@ -35,8 +35,8 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
-    List<CardProperties> cards =
-        CardPropertiesGenerator().getProperties(amount: 3, difficulty: 1);
+    List<CardProperties> cards = CardPropertiesGenerator()
+        .getProperties(amountOfCards: 3, difficulty: 1);
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),

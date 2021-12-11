@@ -10,7 +10,7 @@ class CardPropertiesGenerator {
     Colors.green.shade300
   ];
   List<CardProperties> getProperties(
-      {required int amount, required int difficulty}) {
+      {required int amountOfCards, required int difficulty}) {
     // random generator
     Random random = Random();
 
@@ -20,7 +20,7 @@ class CardPropertiesGenerator {
     // variables of the cards
     Color? color;
     int? shape;
-    int? amout;
+    int? amount;
     int? fill;
 
     List<CardProperties> listOfProperties = [];
@@ -28,7 +28,7 @@ class CardPropertiesGenerator {
     List<String> listOfAvailableProperties = [
       "color",
       "shape",
-      "amout",
+      "amount",
       "fill",
     ];
 
@@ -44,7 +44,7 @@ class CardPropertiesGenerator {
           break;
         // hard
         case "amount":
-          amout = random.nextInt(3);
+          amount = random.nextInt(3);
           break;
 
         case "fill":
@@ -80,16 +80,17 @@ class CardPropertiesGenerator {
         // if the property isn't defined, generate it randomly
         color: color ?? availableColors[random.nextInt(3)],
         shape: shape ?? random.nextInt(3),
-        amout: amout ?? random.nextInt(3) + 1,
+        amount: amount ?? random.nextInt(3) + 1,
         fill: fill ?? random.nextInt(3));
 
     bool checkIfNotCardOnList(
             List<CardProperties> listOfCards, CardProperties card) =>
         listOfCards.every((element) => !(card.shape == element.shape &&
+            card.amount == element.amount &&
             card.fill == element.fill &&
             card.color == element.color));
 
-    for (var i = 0; i < amount; i++) {
+    for (var i = 0; i < amountOfCards; i++) {
       // REFACTOR THIS
       // there is no more corsed way to do the thing i want, but it's to late
       // check if the card properties are already included and create it again if it's

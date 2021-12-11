@@ -21,7 +21,7 @@ class ShapeCard extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              for (var i = 0; i < cardProperties.amout; i++)
+              for (var i = 0; i < cardProperties.amount; i++)
                 CustomShape(cardProperties)
             ],
           ),
