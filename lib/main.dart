@@ -18,9 +18,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.orange,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'Sets'),
     );
   }
 }
@@ -35,20 +35,43 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  int difficulty = 2;
+  List<CardProperties> cards =
+      CardPropertiesGenerator().getProperties(amountOfCards: 3, difficulty: 2);
+
+  // this is to force half of the times the set is true
+  // it may be to brute, but i'm not that good doing algorithms
+
+  @override
+  void initState() {
+    bool randomBool = Random().nextBool();
+    while (!(ValidityChecker().checkList(cards) == randomBool)) {
+      cards = CardPropertiesGenerator()
+          .getProperties(amountOfCards: 3, difficulty: difficulty);
+    }
+    super.initState();
+  }
+
+  bool nextSet = true;
+  void handlePress(String direction) {
+    var posibleCard = cards = CardPropertiesGenerator()
+        .getProperties(amountOfCards: 3, difficulty: difficulty);
+    print(direction);
+    nextSet = Random().nextBool();
+    while (!(ValidityChecker().checkList(posibleCard) == nextSet)) {
+      posibleCard = cards = CardPropertiesGenerator()
+          .getProperties(amountOfCards: 3, difficulty: difficulty);
+    }
+    setState(() {
+      cards = posibleCard;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    double width = MediaQuery.of(context).size.width;
-    List<CardProperties> cards = CardPropertiesGenerator()
-        .getProperties(amountOfCards: 3, difficulty: 1);
-
-    // this is to force half of the times the set is true
-    // it may be to brute, but i'm not that good doing algorithms
-    while (ValidityChecker().checkList(cards) == Random().nextBool()) {
-      cards = CardPropertiesGenerator()
-          .getProperties(amountOfCards: 3, difficulty: 2);
-    }
-
     String validity = ValidityChecker().checkList(cards).toString();
+    double width = MediaQuery.of(context).size.width;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
@@ -56,14 +79,50 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Column(
         children: [
           Text(validity),
-          Row(
-            children: [
-              for (var i = 0; i < cards.length; i++)
-                SizedBox(
-                    height: 550,
-                    width: width / cards.length,
-                    child: ShapeCard(cards[i])),
-            ],
+          Expanded(
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                Row(
+                  children: [
+                    for (var i = 0; i < cards.length; i++)
+                      SizedBox(
+                          height: MediaQuery.of(context).size.height,
+                          width: width / cards.length,
+                          child: ShapeCard(cards[i])),
+                  ],
+                ),
+                Row(children: [
+                  TextButton(
+                    style: ButtonStyle(
+                        backgroundColor: MaterialStateProperty.all<Color>(
+                            Colors.transparent)),
+                    child: Container(
+                      color: Colors.transparent,
+                      height: MediaQuery.of(context).size.height,
+                      width: width / 3,
+                    ),
+                    onPressed: () {
+                      handlePress("left");
+                    },
+                  ),
+                  const Spacer(),
+                  TextButton(
+                    style: ButtonStyle(
+                        backgroundColor: MaterialStateProperty.all<Color>(
+                            Colors.transparent)),
+                    child: Container(
+                      color: Colors.transparent,
+                      height: MediaQuery.of(context).size.height,
+                      width: width / 3,
+                    ),
+                    onPressed: () {
+                      handlePress("right");
+                    },
+                  )
+                ])
+              ],
+            ),
           ),
         ],
       ),

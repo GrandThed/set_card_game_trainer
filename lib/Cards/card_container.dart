@@ -13,8 +13,8 @@ class ShapeCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       margin: const EdgeInsets.all(5),
-      color: Colors.blue.shade50,
-      elevation: 3,
+      color: Colors.grey.shade50,
+      elevation: 0,
       child: Center(
         child: Padding(
           padding: const EdgeInsets.all(10),
