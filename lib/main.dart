@@ -1,7 +1,10 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:set_card_game_trainer/Cards/card_container.dart';
 import 'package:set_card_game_trainer/Cards/card_properties.dart';
 import 'package:set_card_game_trainer/Cards/card_properties_generator.dart';
+import 'package:set_card_game_trainer/game_logic/validity_checker.dart';
 
 void main() {
   runApp(const MyApp());
@@ -37,14 +40,31 @@ class _MyHomePageState extends State<MyHomePage> {
     double width = MediaQuery.of(context).size.width;
     List<CardProperties> cards = CardPropertiesGenerator()
         .getProperties(amountOfCards: 3, difficulty: 1);
+
+    // this is to force half of the times the set is true
+    // it may be to brute, but i'm not that good doing algorithms
+    while (ValidityChecker().checkList(cards) == Random().nextBool()) {
+      cards = CardPropertiesGenerator()
+          .getProperties(amountOfCards: 3, difficulty: 2);
+    }
+
+    String validity = ValidityChecker().checkList(cards).toString();
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: Row(
+      body: Column(
         children: [
-          for (var i = 0; i < cards.length; i++)
-            SizedBox(width: width / cards.length, child: ShapeCard(cards[i])),
+          Text(validity),
+          Row(
+            children: [
+              for (var i = 0; i < cards.length; i++)
+                SizedBox(
+                    height: 550,
+                    width: width / cards.length,
+                    child: ShapeCard(cards[i])),
+            ],
+          ),
         ],
       ),
     );

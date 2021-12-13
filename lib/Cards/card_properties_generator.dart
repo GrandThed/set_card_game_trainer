@@ -44,7 +44,7 @@ class CardPropertiesGenerator {
           break;
         // hard
         case "amount":
-          amount = random.nextInt(3);
+          amount = random.nextInt(3) + 1;
           break;
 
         case "fill":
@@ -59,16 +59,13 @@ class CardPropertiesGenerator {
         // easy
         _setRandomValueToVariable(randomPicker[0]);
         _setRandomValueToVariable(randomPicker[1]);
-        _setRandomValueToVariable(randomPicker[2]);
         break;
       case 2:
         // normal
         _setRandomValueToVariable(randomPicker[0]);
-        _setRandomValueToVariable(randomPicker[1]);
         break;
       case 3:
         // hard
-        _setRandomValueToVariable(randomPicker[0]);
         break;
       default:
     }
@@ -89,7 +86,6 @@ class CardPropertiesGenerator {
             card.amount == element.amount &&
             card.fill == element.fill &&
             card.color == element.color));
-
     for (var i = 0; i < amountOfCards; i++) {
       // REFACTOR THIS
       // there is no more corsed way to do the thing i want, but it's to late
