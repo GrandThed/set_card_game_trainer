@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:set_card_game_trainer/Cards/card_container.dart';
 import 'package:set_card_game_trainer/Cards/card_properties.dart';
 import 'package:set_card_game_trainer/Cards/card_properties_generator.dart';
+import 'package:set_card_game_trainer/game_logic/options_constructor.dart';
 import 'package:set_card_game_trainer/game_logic/validity_checker.dart';
+import 'package:set_card_game_trainer/game_options.dart';
 
 void main() {
   runApp(const MyApp());
@@ -13,6 +15,9 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
+  final int defaultAmount = 3;
+  final int defaultDifficulty = 3;
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -20,65 +25,115 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.orange,
       ),
-      home: const MyHomePage(title: 'Sets'),
+      home: MyHomePage(
+          title: 'Sets',
+          defaultAmount: defaultAmount,
+          defaultDifficulty: defaultDifficulty),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
+  const MyHomePage(
+      {Key? key,
+      required this.title,
+      required this.defaultDifficulty,
+      required this.defaultAmount})
+      : super(key: key);
 
   final String title;
+  // not used yet
+  final int defaultDifficulty;
+  final int defaultAmount;
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int difficulty = 2;
+  OptionsConstructor options =
+      const OptionsConstructor(difficulty: 3, amountOfShapes: 3);
+
+  DificultyLevels savedDifficulty = DificultyLevels.hard;
+
   List<CardProperties> cards =
       CardPropertiesGenerator().getProperties(amountOfCards: 3, difficulty: 2);
 
-  // this is to force half of the times the set is true
-  // it may be to brute, but i'm not that good doing algorithms
-
   @override
   void initState() {
-    bool randomBool = Random().nextBool();
-    while (!(ValidityChecker().checkList(cards) == randomBool)) {
-      cards = CardPropertiesGenerator()
-          .getProperties(amountOfCards: 3, difficulty: difficulty);
-    }
     super.initState();
+    while (!(ValidityChecker().checkList(cards) == true)) {
+      cards = CardPropertiesGenerator().getProperties(
+          amountOfCards: options.amountOfShapes,
+          difficulty: options.difficulty);
+    }
   }
 
-  bool nextSet = true;
-  void handlePress(String direction) {
-    var posibleCard = cards = CardPropertiesGenerator()
-        .getProperties(amountOfCards: 3, difficulty: difficulty);
-    print(direction);
+  void handlePress(bool direction) {
+    bool nextSet = true;
+    var posibleCard = CardPropertiesGenerator().getProperties(
+        amountOfCards: options.amountOfShapes, difficulty: options.difficulty);
+
+    // this is to force that half of the times the set is true
+    // it may be way too brute force, but i'm not that great at doing algorithms
+
     nextSet = Random().nextBool();
     while (!(ValidityChecker().checkList(posibleCard) == nextSet)) {
-      posibleCard = cards = CardPropertiesGenerator()
-          .getProperties(amountOfCards: 3, difficulty: difficulty);
+      posibleCard = CardPropertiesGenerator().getProperties(
+          amountOfCards: options.amountOfShapes,
+          difficulty: options.difficulty);
     }
     setState(() {
       cards = posibleCard;
     });
   }
 
+  void handleOptionsChange(DificultyLevels difficulty) {
+    savedDifficulty = difficulty;
+    OptionsConstructor newOptions;
+    switch (difficulty) {
+      case DificultyLevels.superEasy:
+        newOptions = const OptionsConstructor(difficulty: 1, amountOfShapes: 2);
+        break;
+      case DificultyLevels.easy:
+        newOptions = const OptionsConstructor(difficulty: 1, amountOfShapes: 3);
+        break;
+      case DificultyLevels.normal:
+        newOptions = const OptionsConstructor(difficulty: 2, amountOfShapes: 3);
+        break;
+      case DificultyLevels.hard:
+        newOptions = const OptionsConstructor(difficulty: 3, amountOfShapes: 3);
+        break;
+      default:
+        newOptions = options;
+    }
+    setState(() {
+      options = newOptions;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    String validity = ValidityChecker().checkList(cards).toString();
+    // String validity = ValidityChecker().checkList(cards).toString();
     double width = MediaQuery.of(context).size.width;
 
     return Scaffold(
+      drawer: Drawer(
+        child: Column(
+          children: [
+            Options(
+                handleOptionsChange: handleOptionsChange,
+                savedDifficulty: savedDifficulty),
+          ],
+        ),
+      ),
       appBar: AppBar(
+        elevation: 0,
         title: Text(widget.title),
       ),
       body: Column(
         children: [
-          Text(validity),
+          // Text(validity),
           Expanded(
             child: Stack(
               fit: StackFit.expand,
@@ -103,7 +158,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       width: width / 3,
                     ),
                     onPressed: () {
-                      handlePress("left");
+                      handlePress(false);
                     },
                   ),
                   const Spacer(),
@@ -117,7 +172,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       width: width / 3,
                     ),
                     onPressed: () {
-                      handlePress("right");
+                      handlePress(true);
                     },
                   )
                 ])
