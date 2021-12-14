@@ -51,6 +51,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  int points = 0;
   OptionsConstructor options =
       const OptionsConstructor(difficulty: 3, amountOfShapes: 3);
 
@@ -70,6 +71,16 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void handlePress(bool direction) {
+    if (direction == ValidityChecker().checkList(cards)) {
+      setState(() {
+        points += 1;
+      });
+    } else {
+      setState(() {
+        points = 0;
+      });
+    }
+
     bool nextSet = true;
     var posibleCard = CardPropertiesGenerator().getProperties(
         amountOfCards: options.amountOfShapes, difficulty: options.difficulty);
@@ -107,7 +118,9 @@ class _MyHomePageState extends State<MyHomePage> {
       default:
         newOptions = options;
     }
+
     setState(() {
+      points = 0;
       options = newOptions;
     });
   }
@@ -138,6 +151,7 @@ class _MyHomePageState extends State<MyHomePage> {
             child: Stack(
               fit: StackFit.expand,
               children: [
+                Text(points.toString()),
                 Row(
                   children: [
                     for (var i = 0; i < cards.length; i++)
