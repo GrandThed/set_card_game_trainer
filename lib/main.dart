@@ -24,6 +24,12 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       theme: ThemeData(
         primarySwatch: Colors.orange,
+        textTheme: TextTheme(
+            bodyText2: TextStyle(
+                fontSize: 200.0,
+                fontWeight: FontWeight.w300,
+                color: Colors.orange.shade100,
+                fontFamily: 'Hind')),
       ),
       home: MyHomePage(
           title: 'Sets',
@@ -151,7 +157,13 @@ class _MyHomePageState extends State<MyHomePage> {
             child: Stack(
               fit: StackFit.expand,
               children: [
-                Text(points.toString()),
+                Align(
+                  child: Text(
+                    points.toString(),
+                    style: Theme.of(context).textTheme.bodyText2,
+                  ),
+                  alignment: Alignment.topCenter,
+                ),
                 Row(
                   children: [
                     for (var i = 0; i < cards.length; i++)
